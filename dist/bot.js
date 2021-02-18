@@ -1,41 +1,20 @@
-import express from 'express';
-import routes from './routes';
-import bots from './bot';
-import cors from 'cors';
-const venom = require('venom-bot');
+"use strict";Object.defineProperty(exports, "__esModule", {value: true});const venom = require('venom-bot');
 
-class App {
 
-    constructor() {
-        this.server = express();
+ class Bot{
 
-        this.middlewares();
-        this.routes();
-        //this.cria();
-        this.bots();
-    }
+   static async cria(sessionName){
 
-    middlewares() {
-        this.server.use(cors());
-        this.server.use(express.json());
-    }
+        Bot.qrcode = false;
 
-    routes() {
-        this.server.use(routes);
-    }
-
-    bots() {
-        bots.cria('sessao1');
-    }
-
-    cria(){
-        venom
-            .create('session1',
+        const client = await venom
+            .create(sessionName,
                 (base64Qrimg, asciiQR, attempts, urlCode) => {
-                    console.log('Number of attempts to read the qrcode: ', attempts);
-                    console.log('Terminal qrcode: ', asciiQR);
-                    console.log('base64 image string qrcode: ', base64Qrimg);
-                    console.log('urlCode (data-ref): ', urlCode);
+                    //console.log('Number of attempts to read the qrcode: ', attempts);
+                    //console.log('Terminal qrcode: ', asciiQR);
+                    //console.log('base64 image string qrcode: ', base64Qrimg);
+                    //console.log('urlCode (data-ref): ', urlCode);
+                    Bot.qrcode = base64Qrimg;
                 },
                 (statusSession, session) => {
                     console.log('Status Session: ', statusSession); //return isLogged || notLogged || browserClose || qrReadSuccess || qrReadFail || autocloseCalled || desconnectedMobile || deleteToken
@@ -47,7 +26,7 @@ class App {
                     devtools: false,
                     useChrome: true,
                     debug: false,
-                    logQR: true,
+                    logQR: false,
                     refreshQR: 15000,
                     autoClose: 60 * 60 * 24 * 365, //never
                     disableSpins: true
@@ -75,25 +54,40 @@ class App {
                 console.log('There was an error in the bot',erro);
             });
         });
+
     }
 
     async start(client) {
         let inchat = await client.isInsideChat(); //wait until the page is in whatsapp chat
         if (inchat) {
           client.onMessage((message) => {
-            if (message.body === 'Hi' && message.isGroupMsg === false) {
-              client
-                .sendText(message.from, 'Welcome Venom 🕷')
-                .then((result) => {
-                  console.log('Result: ', result); //return object success
-                })
-                .catch((erro) => {
-                  console.error('Error when sending: ', erro); //return object error
-                });
+            if (message.isGroupMsg === false) {
+              validaMsg(client, message);
             }
           });
         }
       }
-}
 
-export default new App().server;
+    async validaMsg(client, message){
+        if (message.body === 'Hi') {
+            client
+              .sendText(message.from, 'Welcome Venom 🕷')
+              .then((result) => {
+                console.log('Result: ', result); //return object success
+              })
+              .catch((erro) => {
+                console.error('Error when sending: ', erro); //return object error
+              });
+          }
+    }
+
+
+
+
+
+
+
+
+}
+exports. default = Bot;
+

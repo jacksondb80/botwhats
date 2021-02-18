@@ -36,17 +36,12 @@
 
             let time = 0;
             client.onStreamChange((state) => {
-                console.log('Connection status: ', state);
-                clearTimeout(time);
-                if(state === 'CONNECTED'){
-                start(client);
-                }
-            //  DISCONNECTED when the mobile device is disconnected
-                if (state === 'DISCONNECTED' || state === 'SYNCING') {
-                time = setTimeout(() => {
-                    client.close();
-                // process.exit(); //optional function if you work with only one session
-                }, 80000);
+                console.log('Connection statusx: ', state);
+                console.log('aqui');
+                //clearTimeout(time);
+                if(state == 'CONNECTED'){
+                    console.log('aquix');
+                    Bot.start(client);
                 }
 
             })
@@ -57,21 +52,24 @@
 
     }
 
-    async start(client) {
-        let inchat = await client.isInsideChat(); //wait until the page is in whatsapp chat
+    static async start(client) {
+        console.log('aqui chegou');
+        var inchat = await client.isInsideChat(); //wait until the page is in whatsapp chat
+        console.log(inchat);
         if (inchat) {
           client.onMessage((message) => {
+            console.log(message.body);
             if (message.isGroupMsg === false) {
-              validaMsg(client, message);
+              Bot.validaMsg(client,message);
             }
           });
         }
       }
 
-    async validaMsg(client, message){
-        if (message.body === 'Hi') {
+      static async validaMsg(client,message){
+        if (message.body === 'Hi' && message.isGroupMsg === false) {
             client
-              .sendText(message.from, 'Welcome Venom 🕷')
+              .sendText(message.from, 'Welcome JDB 🕷')
               .then((result) => {
                 console.log('Result: ', result); //return object success
               })
@@ -79,8 +77,7 @@
                 console.error('Error when sending: ', erro); //return object error
               });
           }
-    }
-
+      }
 
 
 

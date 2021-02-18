@@ -12,7 +12,7 @@ class App {
         this.middlewares();
         this.routes();
         //this.cria();
-        this.bots();
+        //this.bots();
     }
 
     middlewares() {
